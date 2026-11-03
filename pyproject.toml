@@ -1,0 +1,36 @@
+[project]
+name = "ragkb"
+version = "0.1.0"
+description = "企业知识库 RAG · 自研型（解析层 / 切分层）"
+requires-python = ">=3.10"
+dependencies = [
+    "charset-normalizer>=3.3",
+    "markdown-it-py>=3.0",
+    "mammoth>=1.7",
+    "pymupdf>=1.24",
+    "qdrant-client>=1.9",
+    "openai>=1.30",
+]
+
+[project.optional-dependencies]
+# 扫描件 OCR 通道。仅在需要解析无文字层 PDF 时安装，体积大（torch 等）
+ocr = ["mineru[core]>=2.0"]
+# 真实向量化与重排（本地模型）。不装则自动回退到 API 或确定性替身
+embed = ["FlagEmbedding>=1.2.11", "torch>=2.0"]
+# HTTP 服务层
+api = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
+dev = [
+    "pytest>=8.0",
+    "python-docx>=1.1",   # 仅用于生成测试样例
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

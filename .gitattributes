@@ -1,0 +1,7 @@
+# 统一换行符，避免 Windows 上提交后 diff 全是空格变化
+* text=auto eol=lf
+
+# 二进制
+*.docx binary
+*.pdf  binary
+*.png  binary
