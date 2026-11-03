@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>企业知识库问答</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --ink: #1c2024;
+    --ink-2: #5b6470;
+    --ink-3: #8b949f;
+    --line: #e4e7ec;
+    --accent: #3b5bdb;
+    --accent-soft: #eef2ff;
+    --warn: #b54708;
+    --warn-soft: #fffaeb;
+    --ok: #0f766e;
+    --ok-soft: #ecfdf5;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  header h1 { font-size: 15px; margin: 0; font-weight: 650; letter-spacing: .2px; }
+  .stats { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--ink-3); }
+  .stats b { color: var(--ink-2); font-weight: 600; }
+  .notice {
+    flex-basis: 100%; margin-top: 8px;
+    background: var(--warn-soft); border: 1px solid #fedf89; color: var(--warn);
+    border-radius: 8px; padding: 6px 10px; font-size: 12.5px;
+  }
+  .spacer { flex: 1; }
+  button.ghost {
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink-2);
+    border-radius: 8px; padding: 5px 12px; font-size: 12.5px; cursor: pointer;
+  }
+  button.ghost:hover { border-color: #cfd4dc; color: var(--ink); }
+
+  main {
+    flex: 1; overflow-y: auto; padding: 22px 20px 8px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .wrap { width: 100%; max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+
+  .empty { text-align: center; color: var(--ink-3); padding: 48px 0 20px; }
+  .empty h2 { font-size: 16px; color: var(--ink-2); font-weight: 600; margin: 0 0 8px; }
+  .empty .tip { font-size: 12px; color: var(--ink-3); margin: 6px 0 0; }
+  .examples { display: flex; flex-direction: column; gap: 8px; align-items: center; margin-top: 18px; }
+  .examples button {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 16px; font-size: 13px; color: var(--ink-2); cursor: pointer;
+  }
+  .examples button:hover { border-color: var(--accent); color: var(--accent); }
+
+  .turn { display: flex; flex-direction: column; gap: 8px; }
+  .q {
+    align-self: flex-end; max-width: 78%;
+    background: var(--accent); color: #fff;
+    padding: 9px 14px; border-radius: 14px 14px 4px 14px;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .a {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .chip {
+    font-size: 11.5px; padding: 2px 8px; border-radius: 6px;
+    background: var(--bg); color: var(--ink-3); border: 1px solid var(--line);
+  }
+  .chip.rewrite { background: var(--accent-soft); border-color: #dbe3ff; color: var(--accent); }
+  .chip.refuse { background: var(--warn-soft); border-color: #fedf89; color: var(--warn); }
+  .chip.ok { background: var(--ok-soft); border-color: #c6f0e5; color: var(--ok); }
+
+  .answer { white-space: pre-wrap; word-break: break-word; }
+  .answer .cite {
+    font-size: 11px; vertical-align: super; color: var(--accent);
+    background: var(--accent-soft); border-radius: 4px; padding: 0 3px; margin: 0 1px;
+  }
+  .cursor::after {
+    content: ""; display: inline-block; width: 7px; height: 15px;
+    background: var(--accent); margin-left: 2px; vertical-align: -2px;
+    animation: blink 1s steps(2, start) infinite;
+  }
+  @keyframes blink { to { visibility: hidden; } }
+
+  .cites { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .cites[hidden], .debug[hidden] { display: none; }
+  .cites .label { font-size: 11.5px; color: var(--ink-3); }
+  details.cite-card {
+    border: 1px solid var(--line); border-radius: 8px; background: #fbfcfd;
+    padding: 8px 10px; font-size: 12.5px;
+  }
+  details.cite-card summary {
+    cursor: pointer; color: var(--ink-2); list-style: none;
+    display: flex; gap: 8px; align-items: baseline;
+  }
+  details.cite-card summary::-webkit-details-marker { display: none; }
+  details.cite-card summary .idx { color: var(--accent); font-weight: 600; }
+  details.cite-card summary .file { color: var(--ink); }
+  details.cite-card summary .sec { color: var(--ink-3); }
+  details.cite-card .snippet {
+    margin: 8px 0 0; padding-top: 8px; border-top: 1px dashed var(--line);
+    color: var(--ink-2); white-space: pre-wrap;
+  }
+  .debug { margin-top: 10px; font-size: 11.5px; color: var(--ink-3); }
+  .debug summary { cursor: pointer; }
+  .debug pre {
+    margin: 6px 0 0; background: #f8f9fb; border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 10px; overflow-x: auto; font-size: 11px; color: var(--ink-2);
+  }
+
+  footer { padding: 10px 20px 18px; }
+  .composer {
+    width: 100%; max-width: 820px; margin: 0 auto; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px;
+    display: flex; gap: 10px; align-items: flex-end;
+    box-shadow: 0 2px 10px rgba(16, 24, 40, .04);
+  }
+  .composer:focus-within { border-color: #b9c4f5; box-shadow: 0 0 0 3px rgba(59, 91, 219, .08); }
+  textarea {
+    flex: 1; border: 0; resize: none; outline: none; font: inherit;
+    color: var(--ink); background: transparent; max-height: 140px; line-height: 1.6;
+  }
+  textarea::placeholder { color: var(--ink-3); }
+  button.send {
+    border: 0; background: var(--accent); color: #fff; border-radius: 9px;
+    padding: 8px 16px; font-size: 13.5px; cursor: pointer; font-weight: 550;
+  }
+  button.send:disabled { background: #c7cdf0; cursor: not-allowed; }
+  .hint { max-width: 820px; margin: 8px auto 0; font-size: 11.5px; color: var(--ink-3); }
+</style>
+</head>
+<body>
+<header>
+  <h1>企业知识库问答</h1>
+  <div class="stats" id="stats">加载中…</div>
+  <div class="spacer"></div>
+  <button class="ghost" id="reset">新对话</button>
+</header>
+
+<main>
+  <div class="wrap" id="thread">
+    <div class="empty" id="empty">
+      <h2>问点什么</h2>
+      <p>回答会标注来源；问法不完整也可以，系统会先补全再检索。</p>
+      <p class="tip">如果每个问题都返回「最高分 &lt; 阈值」，先看顶部「语料」是不是你要问的那批文档。</p>
+      <div class="examples" id="examples"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="composer">
+    <textarea id="input" rows="1" placeholder="输入问题，Enter 发送，Shift + Enter 换行"></textarea>
+    <button class="send" id="send">发送</button>
+  </div>
+  <div class="hint" id="hint">多轮追问会显示「改写后」的问法；没有依据时直接拒答，不猜。</div>
+</footer>
+
+<script>
+const BASE = location.protocol === "file:" ? "http://127.0.0.1:8000" : "";
+// 兜底示例只在拿不到 /health 时用；正常走服务端探过的可答问题，避免"点了就拒答"。
+const FALLBACK_EXAMPLES = [
+  "年假天数按工龄怎么分档？",
+  "二类城市每天餐补多少钱？",
+  "出差回来多久内要提交报销单？",
+  "二线城市住宿费每晚上限是多少？"
+];
+
+const thread = document.getElementById("thread");
+const empty = document.getElementById("empty");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("send");
+const statsEl = document.getElementById("stats");
+
+let history = [];
+let busy = false;
+
+init();
+
+async function init() {
+  // 支持 /?q=问题 直接带问句打开，方便演示与截图
+  const preset = new URLSearchParams(location.search).get("q");
+  if (preset) {
+    input.value = preset;
+    setTimeout(() => submit(), 200);
+  }
+
+  let examples = FALLBACK_EXAMPLES;
+  try {
+    const res = await fetch(BASE + "/health");
+    const d = await res.json();
+    const bits = [
+      ["语料", d.docs_dir || "—"],
+      ["文档", d.documents],
+      ["切片", d.points],
+      ["embedding", short(d.embedder)],
+      ["rerank", short(d.reranker)],
+      ["作答", short(d.llm)],
+      ["改写", short(d.rewriter || "none")],
+      ["阈值", d.min_score == null ? "关闭" : d.min_score]
+    ];
+    statsEl.innerHTML = bits
+      .map(([k, v]) => `<span>${k} <b>${escapeHtml(String(v))}</b></span>`)
+      .join("");
+
+    if (Array.isArray(d.examples)) examples = d.examples;
+    if (!d.documents || !d.points) {
+      notice(`索引目录「${d.docs_dir || "?"}」里没有文档，问什么都会拒答。先确认 KB_DOCS 指对了目录。`);
+    }
+  } catch (e) {
+    statsEl.innerHTML = `<span style="color:#b54708">服务未就绪：${escapeHtml(e.message)}</span>`;
+  }
+
+  renderExamples(examples);
+}
+
+function renderExamples(list) {
+  const box = document.getElementById("examples");
+  if (!list || !list.length) {
+    // 一个都没通过检索校验：宁可不显示，也不要摆一排"点了必拒答"的问题
+    box.innerHTML = `<span style="font-size:12px">当前索引没有验证可答的示例，直接输入你关心的问题。</span>`;
+    return;
+  }
+  list.forEach((q) => {
+    const b = document.createElement("button");
+    b.textContent = q;
+    b.onclick = () => { input.value = q; submit(); };
+    box.appendChild(b);
+  });
+}
+
+function notice(msg) {
+  statsEl.insertAdjacentHTML(
+    "afterend",
+    `<div class="notice">${escapeHtml(msg)}</div>`
+  );
+}
+
+const LABELS = {
+  OpenAICompatEmbedder: "API",
+  BGEM3Embedder: "bge-m3",
+  HashingEmbedder: "hashing",
+  DashScopeReranker: "qwen-rerank",
+  BGEReranker: "bge-reranker",
+  LexicalReranker: "lexical",
+  OpenAICompatibleLLM: "API 大模型",
+  MockLLM: "替身",
+  LLMRewriter: "LLM",
+  HeuristicRewriter: "字面拼接",
+  none: "关闭"
+};
+function short(name) {
+  return LABELS[name] || String(name || "—").replace(/(Embedder|Reranker|Rewriter|LLM)$/, "");
+}
+
+input.addEventListener("input", () => {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 140) + "px";
+});
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); }
+});
+sendBtn.onclick = submit;
+document.getElementById("reset").onclick = () => {
+  if (busy) return;
+  history = [];
+  [...thread.querySelectorAll(".turn")].forEach((n) => n.remove());
+  empty.style.display = "";
+};
+
+function submit() {
+  const q = input.value.trim();
+  if (!q || busy) return;
+  input.value = "";
+  input.style.height = "auto";
+  ask(q);
+}
+
+async function ask(question) {
+  busy = true;
+  sendBtn.disabled = true;
+  empty.style.display = "none";
+
+  const turn = document.createElement("div");
+  turn.className = "turn";
+  turn.innerHTML = `
+    <div class="q"></div>
+    <div class="a">
+      <div class="meta"></div>
+      <div class="answer cursor"></div>
+      <div class="cites" hidden><div class="label">来源</div></div>
+      <details class="debug" hidden><summary>检索过程</summary><pre></pre></details>
+    </div>`;
+  turn.querySelector(".q").textContent = question;
+  thread.appendChild(turn);
+  scroll();
+
+  const meta = turn.querySelector(".meta");
+  const answerEl = turn.querySelector(".answer");
+  const citesEl = turn.querySelector(".cites");
+  const debugEl = turn.querySelector(".debug");
+  let text = "";
+  let done = null;
+  let allCitations = [];
+
+  try {
+    const res = await fetch(BASE + "/ask/stream", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: question, history })
+    });
+    if (!res.ok || !res.body) throw new Error("HTTP " + res.status);
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { done: eof, value } = await reader.read();
+      if (eof) break;
+      buffer += decoder.decode(value, { stream: true });
+
+      let idx;
+      while ((idx = buffer.indexOf("\n\n")) >= 0) {
+        const raw = buffer.slice(0, idx);
+        buffer = buffer.slice(idx + 2);
+        const evt = parseEvent(raw);
+        if (!evt) continue;
+
+        if (evt.event === "retrieval") handleRetrieval(evt.data, meta, debugEl);
+        else if (evt.event === "citations") allCitations = evt.data || [];
+        else if (evt.event === "delta") {
+          text += evt.data.text || "";
+          answerEl.innerHTML = renderAnswer(text);
+          scroll();
+        } else if (evt.event === "done") done = evt.data;
+      }
+    }
+  } catch (e) {
+    answerEl.classList.remove("cursor");
+    answerEl.textContent = "请求失败：" + e.message + "（确认服务已在 8000 端口运行）";
+    busy = false;
+    sendBtn.disabled = false;
+    return;
+  }
+
+  answerEl.classList.remove("cursor");
+  answerEl.innerHTML = renderAnswer(text || (done && done.text) || "");
+
+  // 只渲染被引用到的来源：citations 事件给的是全部候选，
+  // 把候选当来源列出来，读者会以为答案有 6 条依据。
+  const used = new Set(((done && done.citations) || []).map((c) => c.index));
+  renderCitations(allCitations.filter((c) => used.has(c.index)), citesEl);
+
+  if (done && done.refused) {
+    meta.insertAdjacentHTML("beforeend", `<span class="chip refuse">拒答</span>`);
+  } else if (done && done.uncited) {
+    meta.insertAdjacentHTML("beforeend", `<span class="chip refuse">未标注引用</span>`);
+  } else if (done) {
+    meta.insertAdjacentHTML("beforeend", `<span class="chip ok">已标注来源</span>`);
+  }
+
+  history.push({ role: "user", content: question });
+  history.push({ role: "assistant", content: text });
+  if (history.length > 12) history = history.slice(-12);
+
+  busy = false;
+  sendBtn.disabled = false;
+  scroll();
+}
+
+function parseEvent(raw) {
+  let event = "message";
+  const dataLines = [];
+  for (const line of raw.split("\n")) {
+    if (line.startsWith("event: ")) event = line.slice(7).trim();
+    else if (line.startsWith("data: ")) dataLines.push(line.slice(6));
+  }
+  if (!dataLines.length) return null;
+  try {
+    return { event, data: JSON.parse(dataLines.join("\n")) };
+  } catch {
+    return null;
+  }
+}
+
+function handleRetrieval(data, meta, debugEl) {
+  const rw = data.rewritten;
+  if (rw) {
+    const changed = data.debug && data.debug.rewrite && data.debug.rewrite.changed;
+    meta.insertAdjacentHTML(
+      "beforeend",
+      `<span class="chip${changed ? " rewrite" : ""}">${changed ? "改写后：" + escapeHtml(rw) : "未改写"}</span>`
+    );
+  }
+  if (data.debug && data.debug.paths) {
+    meta.insertAdjacentHTML("beforeend", `<span class="chip">${data.debug.paths === 2 ? "双路召回" : "单路召回"}</span>`);
+  }
+  if (data.refused && data.reason) {
+    meta.insertAdjacentHTML("beforeend", `<span class="chip refuse">${escapeHtml(friendlyReason(data.reason))}</span>`);
+  }
+  if (data.debug) {
+    debugEl.hidden = false;
+    debugEl.querySelector("pre").textContent = JSON.stringify(data.debug, null, 2);
+  }
+}
+
+// 把内部 reason 翻成人话：below_threshold:0.662<0.771 → 最高分 0.662 < 阈值 0.771
+function friendlyReason(reason) {
+  const m = /^below_threshold:([\d.]+)<([\d.]+)$/.exec(reason || "");
+  if (m) return `最高分 ${m[1]} < 阈值 ${m[2]}`;
+  if (String(reason).startsWith("retrieval:no_candidates")) return "没有召回任何片段";
+  return reason || "已拒答";
+}
+
+function renderCitations(list, citesEl) {
+  if (!list || !list.length) return;
+  citesEl.hidden = false;
+  const label = citesEl.querySelector(".label");
+  list.forEach((c) => {
+    const page = c.page ? ` · 第 ${c.page} 页` : "";
+    const card = document.createElement("details");
+    card.className = "cite-card";
+    card.innerHTML = `
+      <summary>
+        <span class="idx">[${c.index}]</span>
+        <span class="file">${escapeHtml(c.filename || c.title || "")}</span>
+        <span class="sec">${escapeHtml(c.section_path || "")}${page}</span>
+      </summary>
+      <div class="snippet">${escapeHtml(c.snippet || "")}</div>`;
+    citesEl.appendChild(card);
+  });
+  label.textContent = `引用来源（${list.length}）`;
+}
+
+function renderAnswer(text) {
+  return escapeHtml(text).replace(/\[(\d+)\]/g, '<span class="cite">[$1]</span>');
+}
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function scroll() {
+  const main = document.querySelector("main");
+  main.scrollTop = main.scrollHeight;
+}
+</script>
+</body>
+</html>
