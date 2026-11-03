@@ -1,0 +1,39 @@
+{"question": "迟到超过三次每次扣多少钱？", "expected_files": ["HY-HR-003_员工考勤与假勤管理制度_V3.2.txt"], "keywords": ["五十元"], "reference": "每次扣减当月全勤奖五十元。"}
+{"question": "连续旷工几天属于严重违纪？", "expected_files": ["HY-HR-003_员工考勤与假勤管理制度_V3.2.txt"], "keywords": ["连续旷工三天"], "reference": "连续旷工三天，或自然年内累计旷工五天，属严重违纪。"}
+{"question": "年假天数按工龄怎么分档？", "expected_files": ["HY-HR-003_员工考勤与假勤管理制度_V3.2.txt"], "keywords": ["满10年10天"], "reference": "满 1 年 5 天，满 10 年 10 天，满 20 年 15 天。"}
+{"question": "育儿假每年有几天？", "expected_files": ["HY-HR-003_员工考勤与假勤管理制度_V3.2.txt"], "keywords": ["10天"], "reference": "每年十天。"}
+{"question": "补卡一个月有几次机会？", "expected_files": ["HY-HR-003_员工考勤与假勤管理制度_V3.2.txt"], "keywords": ["三次"], "reference": "每自然月三次。"}
+{"question": "一类城市出差住宿费每晚上限多少？", "expected_files": ["HY-FIN-007_差旅费用报销实施细则_V2.5.txt"], "keywords": ["600"], "reference": "600 元/晚。"}
+{"question": "二类城市每天餐补多少钱？", "expected_files": ["HY-FIN-007_差旅费用报销实施细则_V2.5.txt"], "keywords": ["100"], "reference": "100 元/天。"}
+{"question": "出差回来多久内要提交报销单？", "expected_files": ["HY-FIN-007_差旅费用报销实施细则_V2.5.txt"], "keywords": ["十个工作日"], "reference": "十个工作日内。"}
+{"question": "电子发票可以用截图报销吗？", "expected_files": ["HY-FIN-007_差旅费用报销实施细则_V2.5.txt"], "keywords": ["OFD"], "reference": "不可以，须上传 PDF 或 OFD 原件。"}
+{"question": "同性别同事同行住宿怎么报销？", "expected_files": ["HY-FIN-007_差旅费用报销实施细则_V2.5.txt"], "keywords": ["一点五倍"], "reference": "应两人合住一间，住宿标准按单人标准的一点五倍执行。"}
+{"question": "秘密级数据能外发给客户吗，要谁审批？", "expected_files": ["HY-IT-011_信息资产分级与使用规范_V1.8.txt"], "keywords": ["法务审批"], "reference": "仅限业务必需，须部门负责人与法务审批。"}
+{"question": "账号密码多久必须更换一次？", "expected_files": ["HY-IT-011_信息资产分级与使用规范_V1.8.txt"], "keywords": ["九十天"], "reference": "每九十天更换一次。"}
+{"question": "移动介质怎么管理？", "expected_files": ["HY-IT-011_信息资产分级与使用规范_V1.8.txt"], "keywords": ["白名单"], "reference": "实行白名单管理，只允许使用公司配发的加密 U 盘。"}
+{"question": "多少金额以上的采购必须公开招标？", "expected_files": ["HY-PUR-002_采购与招标管理办法_V4.0.docx"], "keywords": ["公开招标"], "reference": "单笔 50 万元（含）以上。"}
+{"question": "A 级供应商的结算账期是多少天？", "expected_files": ["HY-PUR-002_采购与招标管理办法_V4.0.docx"], "keywords": ["60 天"], "reference": "60 天。"}
+{"question": "单一来源采购全年金额占比上限是多少？", "expected_files": ["HY-PUR-002_采购与招标管理办法_V4.0.docx"], "keywords": ["15%"], "reference": "不超过总采购金额的 15%。"}
+{"question": "招标公告要挂多少天？", "expected_files": ["HY-PUR-002_采购与招标管理办法_V4.0.docx"], "keywords": ["5 个工作日"], "reference": "不少于 5 个工作日。"}
+{"question": "供应商年度评估的质量维度占多少权重？", "expected_files": ["HY-PUR-002_采购与招标管理办法_V4.0.docx"], "keywords": ["40%"], "reference": "40%。"}
+{"question": "绩效 S 级的系数是多少？", "expected_files": ["HY-HR-009_薪酬结构与绩效考核规定_V2.1.docx"], "keywords": ["1.2"], "reference": "1.2。"}
+{"question": "年终奖什么时候发放？", "expected_files": ["HY-HR-009_薪酬结构与绩效考核规定_V2.1.docx"], "keywords": ["1 月 31 日"], "reference": "次年 1 月 31 日前随工资发放。"}
+{"question": "在职不满多久离职不发年终奖？", "expected_files": ["HY-HR-009_薪酬结构与绩效考核规定_V2.1.docx"], "keywords": ["三个月"], "reference": "不满三个月。"}
+{"question": "致命缺陷怎么处置？", "expected_files": ["HY-QA-005_产品质量检验与不合格品处置规程_V1.3.docx"], "keywords": ["整批拒收"], "reference": "整批拒收并启动追溯。"}
+{"question": "让步接收的数量比例上限是多少？", "expected_files": ["HY-QA-005_产品质量检验与不合格品处置规程_V1.3.docx"], "keywords": ["5%"], "reference": "不超过该批量的 5%。"}
+{"question": "不合格品多久内要完成隔离？", "expected_files": ["HY-QA-005_产品质量检验与不合格品处置规程_V1.3.docx"], "keywords": ["24 小时"], "reference": "24 小时内完成物理隔离。"}
+{"question": "L4 机密数据的留存期限是多久？", "expected_files": ["HY-SEC-001_数据分级分类与安全管理规定_V3.0.pdf"], "keywords": ["10 年或永"], "reference": "10 年或永久。"}
+{"question": "发现数据泄露要在多久内上报？", "expected_files": ["HY-SEC-001_数据分级分类与安全管理规定_V3.0.pdf"], "keywords": ["30 分钟"], "reference": "三十分钟内报告信息安全办公室。"}
+{"question": "二级事故多久内要报监管部门？", "expected_files": ["HY-EHS-004_生产安全事故综合应急预案_V2.2.pdf"], "keywords": ["1 小时"], "reference": "1 小时内向属地应急管理部门报告。"}
+{"question": "综合应急预案每年演练几次？", "expected_files": ["HY-EHS-004_生产安全事故综合应急预案_V2.2.pdf"], "keywords": ["2 次"], "reference": "不少于 2 次。"}
+{"question": "来料检验的 AQL 是多少？", "expected_files": ["HY-QA-012_来料与出货检验标准_V1.5.pdf"], "keywords": ["0.65"], "reference": "0.65。"}
+{"question": "批次追溯要在多久内完成？", "expected_files": ["HY-QA-012_来料与出货检验标准_V1.5.pdf"], "keywords": ["2 小时"], "reference": "追溯响应不超过 2 小时。"}
+{"question": "研发项目单元测试覆盖率门禁是多少？", "expected_files": ["HY-RD-006_研发项目管理制度_V2.4.md"], "keywords": ["70%"], "reference": "不低于 70%，新增代码不低于 80%。"}
+{"question": "发布首批灰度流量上限是多少？", "expected_files": ["HY-RD-006_研发项目管理制度_V2.4.md"], "keywords": ["5%"], "reference": "不超过 5%。"}
+{"question": "P1 投诉的响应时限是多久？", "expected_files": ["HY-CS-008_客户服务与投诉处理规范_V1.9.md"], "keywords": ["15 分钟"], "reference": "15 分钟内首次响应。"}
+{"question": "客户满意度目标是多少分？", "expected_files": ["HY-CS-008_客户服务与投诉处理规范_V1.9.md"], "keywords": ["4.5"], "reference": "4.5 分以上。"}
+{"question": "常规变更窗口是周几？", "expected_files": ["HY-IT-014_运维值班与变更管理规范_V2.0.md"], "keywords": ["周二"], "reference": "每周二、周四 22:00 至 24:00。"}
+{"question": "哪些时段属于变更冻结期？", "expected_files": ["HY-IT-014_运维值班与变更管理规范_V2.0.md"], "keywords": ["最后两个工作日"], "reference": "月末最后两个工作日与次月首个工作日、重大营销活动期间、法定节假日及其前一个工作日。"}
+{"question": "机密级数据的访问需要谁审批？数据分级规定和信息资产规范分别怎么要求？", "expected_files": ["HY-SEC-001_数据分级分类与安全管理规定_V3.0.pdf", "HY-IT-011_信息资产分级与使用规范_V1.8.txt"], "keywords": ["总裁"], "reference": "两份口径一致：须总裁或授权人逐次审批，且禁止外发。"}
+{"question": "来料不合格品的处置方式，产品质量规程和检验标准是怎么衔接的？", "expected_files": ["HY-QA-005_产品质量检验与不合格品处置规程_V1.3.docx", "HY-QA-012_来料与出货检验标准_V1.5.pdf"], "keywords": ["让步接收"], "reference": "QA-005 规定处置方式与 MRB 流程，QA-012 规定来料抽样与判定；让步接收须轻微缺陷、不超 5%、客户同意。"}
+{"question": "采购来的物料验收不合格，验收和检验分别依据什么？", "expected_files": ["HY-PUR-002_采购与招标管理办法_V4.0.docx", "HY-QA-012_来料与出货检验标准_V1.5.pdf"], "keywords": ["来料检验"], "reference": "采购办法要求到货三个工作日内组织验收，质量部按 QA-012 执行来料检验。"}

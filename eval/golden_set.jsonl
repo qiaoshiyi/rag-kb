@@ -1,0 +1,24 @@
+{"question": "一线城市差旅住宿费每晚上限是多少？", "expected_files": ["报销管理制度.txt"], "keywords": ["600"]}
+{"question": "乘坐飞机经济舱需要提前多久申请？", "expected_files": ["报销管理制度.txt"], "keywords": ["三天"]}
+{"question": "单次业务招待费的上限是多少？", "expected_files": ["报销管理制度.txt"], "keywords": ["2000"]}
+{"question": "年假可以休多少天？", "expected_files": ["员工手册.md"], "keywords": ["5-15"]}
+{"question": "事假有天数限制吗？", "expected_files": ["员工手册.md"], "keywords": ["不限"]}
+{"question": "离职需要提前多久提交申请？", "expected_files": ["员工手册.md"], "keywords": ["三十天"]}
+{"question": "十万元以上的采购由谁审批？", "expected_files": ["采购管理办法.docx"], "keywords": ["总经理"]}
+{"question": "采购申请单需要注明哪些内容？", "expected_files": ["采购管理办法.docx"], "keywords": ["用途"]}
+{"question": "采购物资到货后多久完成验收？", "expected_files": ["采购管理办法.docx"], "keywords": ["三个工作日"]}
+{"question": "账号密码需要多久更换一次？", "expected_files": ["信息安全管理制度.pdf"], "keywords": ["九十天"]}
+{"question": "密码长度最少多少位？", "expected_files": ["信息安全管理制度.pdf"], "keywords": ["十二位"]}
+{"question": "信息安全管理制度依据什么制定？", "expected_files": ["信息安全管理制度.pdf"], "keywords": ["法律法规"]}
+{"question": "公司的核心工作时间是几点？", "expected_files": ["考勤管理制度.md"], "keywords": ["十点"]}
+{"question": "一个月迟到几次会扣全勤奖？", "expected_files": ["考勤管理制度.md"], "keywords": ["三次"]}
+{"question": "法定节假日加班如何计算？", "expected_files": ["考勤管理制度.md"], "keywords": ["3 倍"]}
+{"question": "远程办公需要提前多久申请？", "expected_files": ["远程办公管理规定.txt"], "keywords": ["一天"]}
+{"question": "远程办公如何接入公司内网？", "expected_files": ["远程办公管理规定.txt"], "keywords": ["VPN"]}
+{"question": "VPN 账号可以借给同事使用吗？", "expected_files": ["远程办公管理规定.txt"], "keywords": ["不得转借"]}
+{"question": "A 级供应商的结算账期是多少天？", "expected_files": ["供应商管理办法.docx"], "keywords": ["60 天"]}
+{"question": "供应商准入要求成立满几年？", "expected_files": ["供应商管理办法.docx"], "keywords": ["两年"]}
+{"question": "B 级供应商的年度采购额区间是多少？", "expected_files": ["供应商管理办法.docx"], "keywords": ["100 万"]}
+{"question": "公司数据分为哪几个等级？", "expected_files": ["数据分级分类规范.pdf"], "keywords": ["四级"]}
+{"question": "秘密级数据哪些人可以访问？", "expected_files": ["数据分级分类规范.pdf"], "keywords": ["部门负责人"]}
+{"question": "访问机密级数据需要谁审批？", "expected_files": ["数据分级分类规范.pdf"], "keywords": ["总裁"]}

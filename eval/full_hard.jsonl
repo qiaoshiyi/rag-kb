@@ -1,0 +1,19 @@
+{"question": "早上来晚了会被扣钱吗？", "expected_files": ["HY-HR-003_员工考勤与假勤管理制度_V3.2.txt"], "keywords": ["五十元"], "reference": "月累计迟到超过三次，每次扣减当月全勤奖五十元。"}
+{"question": "不打招呼就不来上班，多久算严重违纪？", "expected_files": ["HY-HR-003_员工考勤与假勤管理制度_V3.2.txt"], "keywords": ["连续旷工三天"], "reference": "连续旷工三天或年累计五天属严重违纪，可解除劳动合同。"}
+{"question": "女员工生孩子能休多久？", "expected_files": ["HY-HR-003_员工考勤与假勤管理制度_V3.2.txt"], "keywords": ["一百五十八天"], "reference": "产假 158 天，难产加 15 天，多胞胎每多一个加 15 天。"}
+{"question": "爱人生产，男方能休几天？", "expected_files": ["HY-HR-003_员工考勤与假勤管理制度_V3.2.txt"], "keywords": ["十五天"], "reference": "男员工陪产假十五天，须在配偶分娩之日起三个月内使用。"}
+{"question": "去外地办事住酒店，一晚上最多能报多少？", "expected_files": ["HY-FIN-007_差旅费用报销实施细则_V2.5.txt"], "keywords": ["600"], "reference": "按城市分级执行限额，一类城市 600 元/晚，超标自理。"}
+{"question": "报销拖太久会怎么样？", "expected_files": ["HY-FIN-007_差旅费用报销实施细则_V2.5.txt"], "keywords": ["三十个工作日"], "reference": "超过三十个工作日未提交，财务部不予受理。"}
+{"question": "发票抬头写错了还能报吗？", "expected_files": ["HY-FIN-007_差旅费用报销实施细则_V2.5.txt"], "keywords": ["全称"], "reference": "抬头必须为公司全称与完整税号，内容须与实际消费一致。"}
+{"question": "客户资料能直接发到微信上吗？", "expected_files": ["HY-IT-011_信息资产分级与使用规范_V1.8.txt"], "keywords": ["个人微信"], "reference": "禁止通过个人微信、QQ 传输秘密级及以上文件。"}
+{"question": "买东西花多少钱以上就得走招标？", "expected_files": ["HY-PUR-002_采购与招标管理办法_V4.0.docx"], "keywords": ["公开招标"], "reference": "单笔 50 万元（含）以上须公开招标。"}
+{"question": "供应商表现一直很差会怎么处理？", "expected_files": ["HY-PUR-002_采购与招标管理办法_V4.0.docx"], "keywords": ["D 级"], "reference": "年度评估低于 60 分降为 D 级淘汰，停止合作。"}
+{"question": "工资里浮动那部分占多少？", "expected_files": ["HY-HR-009_薪酬结构与绩效考核规定_V2.1.docx"], "keywords": ["20%"], "reference": "绩效工资占月度现金收入 20%~40%，按职级递增，P1-P3 为 20%。"}
+{"question": "考核拿了 C 会有什么影响？", "expected_files": ["HY-HR-009_薪酬结构与绩效考核规定_V2.1.docx"], "keywords": ["0.7"], "reference": "C 级绩效系数 0.7，占比约 10%，不具备调薪资格。"}
+{"question": "产品外壳有条小划痕还能出货吗？", "expected_files": ["HY-QA-005_产品质量检验与不合格品处置规程_V1.3.docx"], "keywords": ["轻微缺陷"], "reference": "轻微缺陷不影响功能时可让步接收，须客户书面同意且不超批量 5%。"}
+{"question": "客户资料被泄露了要多久往上报？", "expected_files": ["HY-SEC-001_数据分级分类与安全管理规定_V3.0.pdf"], "keywords": ["30 分钟"], "reference": "发现疑似泄露须在三十分钟内报告信息安全办公室。"}
+{"question": "车间着火了第一步做什么？", "expected_files": ["HY-EHS-004_生产安全事故综合应急预案_V2.2.pdf"], "keywords": ["切断着火区域电源"], "reference": "立即报警，切断着火区域电源与可燃气体供应，再用灭火器扑救初起火灾。"}
+{"question": "供应商送来的货怎么抽检？抽多少？", "expected_files": ["HY-QA-012_来料与出货检验标准_V1.5.pdf"], "keywords": ["样本量"], "reference": "按 GB/T 2828.1 一般检验水平 II 抽样，按批量查样本量与 Ac/Re。"}
+{"question": "代码写完能直接上线吗？", "expected_files": ["HY-RD-006_研发项目管理制度_V2.4.md"], "keywords": ["灰度"], "reference": "面向外部用户必须灰度发布，首批不超过 5%，观察 30 分钟后放量。"}
+{"question": "客户发火投诉，多久必须给回应？", "expected_files": ["HY-CS-008_客户服务与投诉处理规范_V1.9.md"], "keywords": ["15 分钟"], "reference": "P1 紧急工单 15 分钟内首次响应，4 小时内解决。"}
+{"question": "线上改配置要提前多久报备？", "expected_files": ["HY-IT-014_运维值班与变更管理规范_V2.0.md"], "keywords": ["1 个工作日"], "reference": "常规变更须提前不少于 1 个工作日提交变更单并审批。"}

@@ -1,0 +1,10 @@
+{"question": "出差住酒店能报销多少钱？", "expected_files": ["报销管理制度.txt"], "keywords": ["600"]}
+{"question": "新同事第一天上班要带什么材料？", "expected_files": ["员工手册.md"], "keywords": ["身份证"]}
+{"question": "采购东西超过十万块找谁签字？", "expected_files": ["采购管理办法.docx"], "keywords": ["总经理"]}
+{"question": "电脑密码要求几位数？", "expected_files": ["信息安全管理制度.pdf"], "keywords": ["十二位"]}
+{"question": "上班时间几点到几点？", "expected_files": ["考勤管理制度.md"], "keywords": ["十点"]}
+{"question": "在家办公怎么连公司网络？", "expected_files": ["远程办公管理规定.txt"], "keywords": ["VPN"]}
+{"question": "重要数据给谁看？", "expected_files": ["数据分级分类规范.pdf"], "keywords": ["部门负责人"]}
+{"question": "供应商等级是怎么划分的？", "expected_files": ["供应商管理办法.docx"], "keywords": ["A 级"]}
+{"question": "请假不扣钱的有哪几种？", "expected_files": ["员工手册.md"], "keywords": ["年假"]}
+{"question": "用自己电脑处理公司文件安全吗？", "expected_files": ["远程办公管理规定.txt"], "keywords": ["公共无线网络"]}
