@@ -1,0 +1,134 @@
+[
+  {
+    "format": "txt",
+    "file": "txt\\HY-HR-003_员工考勤与假勤管理制度_V3.2.txt",
+    "doc_id": "HY-HR-003",
+    "title": "员工考勤与假勤管理制度",
+    "classification": "内部",
+    "blocks": 68,
+    "tables": 2,
+    "chars": 2426,
+    "bytes": 7394
+  },
+  {
+    "format": "txt",
+    "file": "txt\\HY-FIN-007_差旅费用报销实施细则_V2.5.txt",
+    "doc_id": "HY-FIN-007",
+    "title": "差旅费用报销实施细则",
+    "classification": "内部",
+    "blocks": 60,
+    "tables": 2,
+    "chars": 1958,
+    "bytes": 6220
+  },
+  {
+    "format": "txt",
+    "file": "txt\\HY-IT-011_信息资产分级与使用规范_V1.8.txt",
+    "doc_id": "HY-IT-011",
+    "title": "信息资产分级与使用规范",
+    "classification": "内部",
+    "blocks": 47,
+    "tables": 2,
+    "chars": 1804,
+    "bytes": 8119
+  },
+  {
+    "format": "md",
+    "file": "md\\HY-RD-006_研发项目管理制度_V2.4.md",
+    "doc_id": "HY-RD-006",
+    "title": "研发项目管理制度",
+    "classification": "内部",
+    "blocks": 44,
+    "tables": 3,
+    "chars": 1999,
+    "bytes": 7486
+  },
+  {
+    "format": "md",
+    "file": "md\\HY-CS-008_客户服务与投诉处理规范_V1.9.md",
+    "doc_id": "HY-CS-008",
+    "title": "客户服务与投诉处理规范",
+    "classification": "内部",
+    "blocks": 38,
+    "tables": 3,
+    "chars": 1554,
+    "bytes": 6666
+  },
+  {
+    "format": "md",
+    "file": "md\\HY-IT-014_运维值班与变更管理规范_V2.0.md",
+    "doc_id": "HY-IT-014",
+    "title": "运维值班与变更管理规范",
+    "classification": "内部",
+    "blocks": 38,
+    "tables": 4,
+    "chars": 1939,
+    "bytes": 6559
+  },
+  {
+    "format": "docx",
+    "file": "docx\\HY-PUR-002_采购与招标管理办法_V4.0.docx",
+    "doc_id": "HY-PUR-002",
+    "title": "采购与招标管理办法",
+    "classification": "内部",
+    "blocks": 66,
+    "tables": 5,
+    "chars": 2491,
+    "bytes": 44959
+  },
+  {
+    "format": "docx",
+    "file": "docx\\HY-HR-009_薪酬结构与绩效考核规定_V2.1.docx",
+    "doc_id": "HY-HR-009",
+    "title": "薪酬结构与绩效考核规定",
+    "classification": "秘密",
+    "blocks": 52,
+    "tables": 6,
+    "chars": 2129,
+    "bytes": 43956
+  },
+  {
+    "format": "docx",
+    "file": "docx\\HY-QA-005_产品质量检验与不合格品处置规程_V1.3.docx",
+    "doc_id": "HY-QA-005",
+    "title": "产品质量检验与不合格品处置规程",
+    "classification": "内部",
+    "blocks": 47,
+    "tables": 4,
+    "chars": 1994,
+    "bytes": 43566
+  },
+  {
+    "format": "pdf",
+    "file": "pdf\\HY-SEC-001_数据分级分类与安全管理规定_V3.0.pdf",
+    "doc_id": "HY-SEC-001",
+    "title": "数据分级分类与安全管理规定",
+    "classification": "秘密",
+    "blocks": 62,
+    "tables": 5,
+    "chars": 2751,
+    "bytes": 205466
+  },
+  {
+    "format": "pdf",
+    "file": "pdf\\HY-EHS-004_生产安全事故综合应急预案_V2.2.pdf",
+    "doc_id": "HY-EHS-004",
+    "title": "生产安全事故综合应急预案",
+    "classification": "内部",
+    "blocks": 73,
+    "tables": 4,
+    "chars": 3220,
+    "bytes": 222003
+  },
+  {
+    "format": "pdf",
+    "file": "pdf\\HY-QA-012_来料与出货检验标准_V1.5.pdf",
+    "doc_id": "HY-QA-012",
+    "title": "来料与出货检验标准",
+    "classification": "内部",
+    "blocks": 44,
+    "tables": 4,
+    "chars": 2005,
+    "bytes": 186615
+  }
+]
