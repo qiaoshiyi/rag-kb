@@ -33,18 +33,30 @@
 
 ## 跑起来
 
-不需要 API key 也能先看界面（用确定性替身：hashing 向量 + 词面重排 + 抽取式作答）：
+**环境要求：只要有 Python 3.10+**（3.11 / 3.12 / 3.13 都验证过）。  
+不需要 GPU、不需要 Docker、不需要单独装 Qdrant（默认跑内存模式），占磁盘约 300 MB。
 
 ```bash
-pip install -e ".[dev,api]"
-python -m pytest                 # 142 个测试，不联网
+git clone https://github.com/qiaoshiyi/rag-kb.git && cd rag-kb
+pip install -e ".[dev,api]"      # 约 40 秒，会装 60 个包
+```
+
+下载 zip 也行，解压后进目录一样执行。`[dev]` 是测试用的，`[api]` 是服务层用的；少装 `[api]` 就起不了 HTTP 服务，少装 `[dev]` 就跑不了测试。
+
+不需要 API key 也能先看见东西在动（用确定性替身：hashing 向量 + 词面重排 + 抽取式作答）：
+
+```bash
+python -m pytest                    # 142 个测试，不联网，约 7 秒
 python scripts/serve.py --offline   # 打开 http://127.0.0.1:8000
 ```
+
+> **首次启动会停 12 秒左右，那不是卡住。** 它在读 12 份 txt/md/pdf/docx、切成 494 个父子块、
+> 逐块算向量、写进 Qdrant 内存库。之后每个请求都是毫秒级。终端会打印 `索引 corpus_full · 12 篇 · 494 块` 确认。
 
 接真实模型（OpenAI 兼容接口，这里用阿里云百炼的兼容网关）：
 
 ```bash
-export DASHSCOPE_API_KEY=sk-xxx
+export DASHSCOPE_API_KEY=sk-xxx     # Windows 用: set DASHSCOPE_API_KEY=sk-xxx
 python scripts/serve.py             # 默认索引 corpus_full，阈值自动配对
 python scripts/ask.py "年假天数按工龄怎么分档？"
 python scripts/chat_demo.py         # 多轮：看每轮改写后的检索问法
@@ -54,6 +66,42 @@ Qdrant 默认用 `:memory:`，不需要 Docker；接真实服务把 `QdrantClien
 
 > 不装 `.[embed]` 时全部回退到 `HashingEmbedder` / `LexicalReranker`。  
 > 它们只按字面重叠打分，**能证明链路通，不能代表检索质量**——这句话很重要，别拿替身的分数当结论。
+
+### 跑不起来时，先对照这四条
+
+| 现象 | 原因 | 怎么办 |
+|---|---|---|
+| `No module named 'ragkb'` | 没执行 `pip install -e .`，或当前不在仓库根目录 | 回到仓库根目录重装一次 |
+| 页面能开，但问什么都「拒答」 | 语料换了、阈值没跟着换 | 用 `scripts/serve.py` 启动（它把两者绑在一起）；手配 `KB_DOCS` 时必须同时设 `KB_MIN_SCORE` |
+| `No module named 'uvicorn'` | 只装了 `pip install -e .` | 换成 `pip install -e ".[dev,api]"` |
+| 8000 端口被占用 | 本机已有服务在跑 | 加 `--port 8010` |
+
+### 换成你自己的文档
+
+把文件丢进一个新目录（支持 `.txt / .md / .pdf / .docx`），先关掉阈值把召回跑通：
+
+```bash
+python scripts/serve.py --docs 你的目录 --threshold 0    # 0 = 不拒答，先看能不能搜到东西
+```
+
+确认检索正常后**必须重新标定阈值**。原始阈值是按 12 份制度文档的分数分布定的，换语料直接套会大面积误杀。标定要三样东西：
+
+```bash
+python scripts/calibrate.py \
+  --docs 你的目录 \
+  --positive 你的正样本.jsonl \
+  --negative 你的负样本.jsonl \
+  --out eval/thresholds_你的目录.json
+```
+
+- **正样本**：确实能在这个语料里答出来的问题，20 条就够（格式见 `eval/full_golden.jsonl`，每行一个 JSON，字段 `question`）
+- **负样本**：这个语料里**根本没有**的问题，15 条左右（格式见 `eval/full_negative.jsonl`）
+- 这一步会调 embedding 和 rerank 接口，需要 `DASHSCOPE_API_KEY`
+
+> ⚠️ `--positive` 不传的话，脚本默认用 `eval/golden_set.jsonl`（那是**另一套语料**的金标）。
+> 拿它标你的语料，采到的是错配分数，算出来的阈值比不设还危险。
+
+标定完正常启动即可（`serve.py` 按目录名找 `eval/thresholds_<目录名>.json`，找不到就不启用阈值）。
 
 ## 链路
 
