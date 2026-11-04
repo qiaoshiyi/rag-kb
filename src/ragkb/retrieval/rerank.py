@@ -205,7 +205,8 @@ class SiliconFlowReranker:
         model: str | None = None,
         api_key: str | None = None,
         url: str | None = None,
-        timeout: float = 30.0,
+        timeout: float = 90.0,
+        retries: int = 3,
     ) -> None:
         key = api_key or os.environ.get("SILICONFLOW_API_KEY")
         if not key:
@@ -218,6 +219,7 @@ class SiliconFlowReranker:
             url or os.environ.get("SILICONFLOW_RERANK_URL") or SILICONFLOW_RERANK_URL
         )
         self._timeout = timeout
+        self._retries = max(1, retries)
 
     @property
     def model(self) -> str:
@@ -239,17 +241,32 @@ class SiliconFlowReranker:
             "top_n": len(hits),
             "return_documents": False,
         }
-        response = httpx.post(
-            self._url,
-            json=payload,
-            headers={"Authorization": f"Bearer {self._key}"},
-            timeout=self._timeout,
+        # 8B 级重排在高峰期偶发读超时（实测标定时遇到过一次），
+        # 单次失败就把整轮标定打断不划算，退避重试两次比抛错更有用。
+        last_error: Exception | None = None
+        for attempt in range(self._retries):
+            try:
+                response = httpx.post(
+                    self._url,
+                    json=payload,
+                    headers={"Authorization": f"Bearer {self._key}"},
+                    timeout=self._timeout,
+                )
+                response.raise_for_status()
+                results = response.json().get("results", [])
+                if not results:
+                    return list(hits)
+                return _apply_rerank_scores(hits, results) or list(hits)
+            except Exception as exc:  # noqa: BLE001 - 网络/配额/超时都走同一条退路
+                last_error = exc
+                if attempt + 1 < self._retries:
+                    time.sleep(1.5 * (attempt + 1))
+
+        warnings.warn(
+            f"重排失败（{self._model}，{self._retries} 次）：{last_error}；本次退化为 RRF 顺序",
+            RuntimeWarning,
         )
-        response.raise_for_status()
-        results = response.json().get("results", [])
-        if not results:
-            return list(hits)
-        return _apply_rerank_scores(hits, results) or list(hits)
+        return list(hits)
 
 
 def build_reranker(backend: str = "auto", **kwargs) -> Reranker:

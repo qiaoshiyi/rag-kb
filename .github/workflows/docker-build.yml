@@ -1,0 +1,70 @@
+name: test & image
+
+# 这个仓库的测试全部离线（替身实现），所以 CI 不需要任何 secret。
+# 镜像那条会真的 docker build + 起容器 curl /health，
+# 因为没有本地 Docker 也能验证「换台机器能不能跑起来」。
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[dev,api]"
+      - run: python -m pytest
+
+  image:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: 生成替身索引
+        # CI 里没有 API key，用 hashing 造一份同结构的索引：
+        # 验证的是「预建索引能不能被加载」，不是检索质量。
+        run: |
+          pip install -e ".[api]"
+          python scripts/build_seed_index.py --docs corpus_full --out deploy/qdrant_seed --backend hashing
+      - name: 构建镜像
+        # 魔搭的镜像仓库在境内，境外 runner 拉不动，验证时换 Docker Hub 官方镜像
+        run: |
+          docker build -f deploy/modelscope/Dockerfile \
+            --build-arg BASE_IMAGE=python:3.11-slim \
+            -t rag-kb:ci .
+      - name: 起容器自检
+        run: |
+          set -euo pipefail
+          docker run -d --name rag -p 7860:7860 rag-kb:ci \
+            python scripts/serve.py --offline --docs corpus_full \
+              --seed deploy/qdrant_seed --host 0.0.0.0 --port 7860 --no-examples
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:7860/health -o /tmp/health.json; then break; fi
+            sleep 1
+          done
+          cat /tmp/health.json
+          python - <<'PY'
+          import json
+          d = json.load(open("/tmp/health.json"))
+          assert d["status"] == "ok", d
+          assert d["documents"] == 12, d
+          assert d["points"] > 0, d
+          print("health ok:", d["documents"], "篇 /", d["points"], "块 /", d["embedder"])
+          PY
+          curl -fsS -X POST http://127.0.0.1:7860/ask \
+            -H "Content-Type: application/json" \
+            -d '{"query":"年假天数按工龄怎么分档？"}' | head -c 400
+          echo
+      - name: 失败时打印容器日志
+        if: failure()
+        run: docker logs rag || true

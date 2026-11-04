@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from typing import Iterator, Sequence
+from typing import Any, Iterator, Sequence
 
 from ragkb.generation.base import Message
 
@@ -82,6 +82,11 @@ class OpenAICompatibleLLM:
         )
         self._model = model or preset.model
         self._provider = provider
+        # Qwen3 这类模型默认先"想"一段再答，实测 Qwen3-8B 单轮从 6.3s 降到 1.0s。
+        # 只在显式打开时才传，别的供应商不认这个字段，乱传会 400。
+        self._extra_body: dict[str, Any] = {}
+        if os.environ.get("KB_DISABLE_THINKING", "").strip().lower() in {"1", "true", "yes"}:
+            self._extra_body["enable_thinking"] = False
 
     @property
     def model(self) -> str:
@@ -91,18 +96,25 @@ class OpenAICompatibleLLM:
     def provider(self) -> str:
         return self._provider
 
+    def _create(self, messages: Sequence[Message], temperature: float, max_tokens: int, stream: bool):
+        kwargs: dict[str, Any] = {
+            "model": self._model,
+            "messages": [m.to_dict() for m in messages],
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "stream": stream,
+        }
+        if self._extra_body:
+            kwargs["extra_body"] = self._extra_body
+        return self._client.chat.completions.create(**kwargs)
+
     def complete(
         self,
         messages: Sequence[Message],
         temperature: float = 0.1,
         max_tokens: int = 1024,
     ) -> str:
-        response = self._client.chat.completions.create(
-            model=self._model,
-            messages=[m.to_dict() for m in messages],
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
+        response = self._create(messages, temperature, max_tokens, stream=False)
         return response.choices[0].message.content or ""
 
     def stream(
@@ -111,13 +123,7 @@ class OpenAICompatibleLLM:
         temperature: float = 0.1,
         max_tokens: int = 1024,
     ) -> Iterator[str]:
-        response = self._client.chat.completions.create(
-            model=self._model,
-            messages=[m.to_dict() for m in messages],
-            temperature=temperature,
-            max_tokens=max_tokens,
-            stream=True,
-        )
+        response = self._create(messages, temperature, max_tokens, stream=True)
         for chunk in response:
             delta = chunk.choices[0].delta.content if chunk.choices else None
             if delta:

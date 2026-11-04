@@ -17,6 +17,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import warnings
 from contextlib import asynccontextmanager
@@ -140,6 +141,19 @@ def _pick_examples(retriever, limit: int = 4) -> list[str]:
     raw = os.environ.get("KB_EXAMPLES", "").strip()
     if raw.lower() in {"off", "none", "no"}:
         return []
+    # 部署时用离线验过的清单：免费实例频繁休眠，每次唤醒都探一遍示例要花 10 秒
+    # 和十几次 API 调用，没必要。清单由 scripts/build_seed_index.py 一并产出。
+    seed_file = os.environ.get("KB_EXAMPLES_FILE", "").strip()
+    if seed_file:
+        path = Path(seed_file)
+        if not path.is_absolute():
+            path = Path(__file__).resolve().parents[3] / path
+        try:
+            items = json.loads(path.read_text(encoding="utf-8"))
+            return [str(q).strip() for q in items][:limit]
+        except Exception as exc:
+            warnings.warn(f"示例清单读取失败（{path}）：{exc}", RuntimeWarning)
+
     candidates = [q.strip() for q in raw.split(",") if q.strip()] if raw else list(EXAMPLE_CANDIDATES)
 
     picked: list[str] = []

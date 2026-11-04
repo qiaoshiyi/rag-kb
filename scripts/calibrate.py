@@ -66,7 +66,11 @@ def main() -> int:
     parser.add_argument("--positive", action="append", default=None, help="可多次指定")
     parser.add_argument("--negative", default=str(DEFAULT_NEGATIVE))
     parser.add_argument("--embedder", default="api", choices=["hashing", "api", "bge-m3", "auto"])
-    parser.add_argument("--reranker", default="dashscope", choices=["auto", "lexical", "dashscope", "bge"])
+    parser.add_argument(
+        "--reranker",
+        default="dashscope",
+        choices=["auto", "lexical", "dashscope", "bge", "siliconflow"],
+    )
     parser.add_argument(
         "--cost-refusal",
         type=float,

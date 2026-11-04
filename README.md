@@ -156,10 +156,12 @@ src/ragkb/
 
 corpus_full/      12 份语料（txt / docx / pdf / md 各 3）+ manifest.json
 eval/             金标集、负样本、多轮集、四份标定结果
-scripts/          造语料、检索演示、多轮演示、评测、标定、起服务
+scripts/          造语料、检索演示、多轮演示、评测、标定、起服务、预建索引
 web/index.html    单文件控制台，无构建、无依赖、无 CDN
 tests/            142 个测试
 docs/             技术选型、踩坑复盘
+deploy/modelscope/ 创空间镜像（预建索引 + 7860 端口，可选）
+.github/workflows/ CI：跑测试，并真的构建镜像起容器自检
 ```
 
 约 1.1 万行（核心 4800 / 测试 1640 / 脚本 4200）。
