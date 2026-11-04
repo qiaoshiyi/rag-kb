@@ -17,12 +17,17 @@ COPY pyproject.toml README.md ./
 COPY src ./src
 RUN pip install --no-cache-dir -e ".[api]"
 
-# 代码、前端、语料、预建索引（索引里已有向量，启动只做加载，不调 embedding）
+# 代码、前端、语料、预建索引
 COPY web ./web
 COPY scripts ./scripts
 COPY corpus_full ./corpus_full
 COPY eval ./eval
-COPY deploy/qdrant_seed ./deploy/qdrant_seed
+# 索引有两种形态：目录（本地 / CI 直接生成）或 zip（网页上传对单文件大小更友好）。
+# qdrant 的 sqlite 是 19 MB，网页上传常常过不去，压成 zip 只有 6 MB。
+COPY deploy ./deploy
+RUN if [ -f deploy/qdrant_seed.zip ]; then \
+        python -m zipfile -e deploy/qdrant_seed.zip deploy/ && rm deploy/qdrant_seed.zip; \
+    fi
 
 # 默认走硅基流动。密钥不写进镜像，由创空间的 Secret 在运行时注入。
 ENV KB_HOST=0.0.0.0 \
