@@ -39,6 +39,13 @@ PRESETS: dict[str, ProviderPreset] = {
         env_key="DASHSCOPE_API_KEY",
         label="阿里云百炼（Qwen）",
     ),
+    # 国内可直连 + 9B 以下模型永久免费，适合放公开 demo
+    "siliconflow": ProviderPreset(
+        base_url="https://api.siliconflow.cn/v1",
+        model="Qwen/Qwen3-8B",
+        env_key="SILICONFLOW_API_KEY",
+        label="硅基流动（SiliconFlow）",
+    ),
 }
 
 

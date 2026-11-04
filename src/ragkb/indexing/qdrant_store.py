@@ -80,6 +80,30 @@ class QdrantStore:
     def count(self) -> int:
         return self.client.count(self.collection, exact=True).count
 
+    def count_documents(self) -> int:
+        """不同 doc_id 的数量。
+
+        加载预建索引时启动流程跳过了建索引，文档数只能从已有 payload 里数出来，
+        否则 /health 会报 0 篇、前端弹「空索引」横幅，实际上库是满的。
+        """
+        seen: set[str] = set()
+        offset = None
+        while True:
+            points, offset = self.client.scroll(
+                collection_name=self.collection,
+                limit=256,
+                offset=offset,
+                with_payload=["doc_id"],
+                with_vectors=False,
+            )
+            for point in points:
+                doc_id = (point.payload or {}).get("doc_id")
+                if doc_id:
+                    seen.add(str(doc_id))
+            if offset is None:
+                break
+        return len(seen)
+
     # ---------- 写入 ----------
 
     def upsert_chunks(

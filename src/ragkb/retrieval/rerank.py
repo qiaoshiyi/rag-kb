@@ -22,6 +22,9 @@ DASHSCOPE_RERANK_URL = (
 )
 DEFAULT_RERANK_MODEL = "qwen3.7-text-rerank"
 
+SILICONFLOW_RERANK_URL = "https://api.siliconflow.cn/v1/rerank"
+SILICONFLOW_RERANK_MODEL = "BAAI/bge-reranker-v2-m3"
+
 
 def _tokens(text: str) -> set[str]:
     return {t.lower() for t in _RE_TOKEN.findall(text)}
@@ -108,6 +111,35 @@ class BGEReranker:
         return rescored
 
 
+def _apply_rerank_scores(hits: Sequence[Hit], items: Sequence[dict]) -> list[Hit]:
+    """把接口返回的 [{index, relevance_score}] 落回 Hit 列表并重新排序。
+
+    各家供应商的差别只在「请求怎么发」「结果放在哪个字段」，
+    打分与排序逻辑完全一样，所以抽出来，避免两套代码各自漂移。
+    """
+    rescored: list[Hit] = []
+    for item in items:
+        index = int(item.get("index", -1))
+        if not 0 <= index < len(hits):
+            continue
+        base = hits[index]
+        score = float(item.get("relevance_score", 0.0))
+        rescored.append(
+            Hit(
+                chunk_id=base.chunk_id,
+                score=score,
+                payload=base.payload,
+                sources=base.sources,
+                raw_score=base.raw_score,
+                rerank_score=score,
+                source_scores=base.source_scores,
+            )
+        )
+
+    rescored.sort(key=lambda h: h.score, reverse=True)
+    return rescored
+
+
 class DashScopeReranker:
     """qwen3.7-text-rerank，走 DashScope 原生端点（不是 OpenAI 兼容路径）。
 
@@ -158,28 +190,66 @@ class DashScopeReranker:
         results = response.json().get("output", {}).get("results", [])
         if not results:
             return list(hits)
+        return _apply_rerank_scores(hits, results) or list(hits)
 
-        rescored: list[Hit] = []
-        for item in results:
-            index = int(item.get("index", -1))
-            if not 0 <= index < len(hits):
-                continue
-            base = hits[index]
-            score = float(item.get("relevance_score", 0.0))
-            rescored.append(
-                Hit(
-                    chunk_id=base.chunk_id,
-                    score=score,
-                    payload=base.payload,
-                    sources=base.sources,
-                    raw_score=base.raw_score,
-                    rerank_score=score,
-                    source_scores=base.source_scores,
-                )
-            )
 
-        rescored.sort(key=lambda h: h.score, reverse=True)
-        return rescored or list(hits)
+class SiliconFlowReranker:
+    """BAAI/bge-reranker-v2-m3，走硅基流动的 /v1/rerank（Cohere 风格）。
+
+    和 DashScope 的差别只有两处：请求体是扁平的，结果直接在顶层 results 里。
+    选它是因为有免费额度且国内可直连——公开 demo 不适合挂自己的付费 key。
+    """
+
+    def __init__(
+        self,
+        model: str | None = None,
+        api_key: str | None = None,
+        url: str | None = None,
+        timeout: float = 30.0,
+    ) -> None:
+        key = api_key or os.environ.get("SILICONFLOW_API_KEY")
+        if not key:
+            raise RuntimeError("未找到 SILICONFLOW_API_KEY，无法调用重排接口")
+        self._key = key
+        self._model = (
+            model or os.environ.get("SILICONFLOW_RERANK_MODEL") or SILICONFLOW_RERANK_MODEL
+        )
+        self._url = (
+            url or os.environ.get("SILICONFLOW_RERANK_URL") or SILICONFLOW_RERANK_URL
+        )
+        self._timeout = timeout
+
+    @property
+    def model(self) -> str:
+        return self._model
+
+    def rerank(self, query: str, hits: Sequence[Hit]) -> list[Hit]:
+        if not hits:
+            return []
+
+        try:
+            import httpx
+        except ImportError as exc:  # pragma: no cover - 依赖缺失路径
+            raise RuntimeError("需要 httpx：pip install httpx") from exc
+
+        payload = {
+            "model": self._model,
+            "query": query,
+            "documents": [hit.text for hit in hits],
+            "top_n": len(hits),
+            "return_documents": False,
+        }
+        response = httpx.post(
+            self._url,
+            json=payload,
+            headers={"Authorization": f"Bearer {self._key}"},
+            timeout=self._timeout,
+        )
+        response.raise_for_status()
+        results = response.json().get("results", [])
+        if not results:
+            return list(hits)
+        return _apply_rerank_scores(hits, results) or list(hits)
 
 
 def build_reranker(backend: str = "auto", **kwargs) -> Reranker:
@@ -192,11 +262,19 @@ def build_reranker(backend: str = "auto", **kwargs) -> Reranker:
     if backend in {"dashscope", "qwen", "qwen-rerank"}:
         return DashScopeReranker(**kwargs)
 
+    if backend in {"siliconflow", "silicon", "sf"}:
+        return SiliconFlowReranker(**kwargs)
+
     if backend == "auto":
         try:
             return BGEReranker(**kwargs)
         except Exception:
             pass
+        if os.environ.get("SILICONFLOW_API_KEY"):
+            try:
+                return SiliconFlowReranker(**kwargs)
+            except Exception:
+                pass
         if os.environ.get("DASHSCOPE_API_KEY"):
             try:
                 return DashScopeReranker(**kwargs)

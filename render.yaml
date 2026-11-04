@@ -1,0 +1,53 @@
+# Render Blueprint：把 rag-kb 部署成公开 demo
+#
+# 用法：Render 控制台 → New → Blueprint → 选仓库，它会读这个文件自动建服务。
+#
+# 两个 secret 需要你在 Render 页面手填（sync: false 表示不进 git）：
+#   SILICONFLOW_API_KEY  硅基流动的 key，用于 rerank / LLM / 查询向量化
+#   KB_EMBED_API_KEY     同一个 key（embedding 走 OpenAI 兼容端点，单独一个变量名更清楚）
+#   KB_MIN_SCORE         重新标定后的拒答阈值，没标定就别填（留空等于关闭阈值）
+
+services:
+  - type: web
+    name: rag-kb-demo
+    runtime: python
+    plan: free
+    region: singapore
+    healthCheckPath: /health
+    # 构建阶段就把索引建好：解析 12 份文档 + 494 块向量化。
+    # 放到运行时做，免费实例只有 0.1 CPU，冷启动要一分多钟。
+    buildCommand: >-
+      pip install -e ".[api]" &&
+      python scripts/build_seed_index.py --docs corpus_full --out deploy/qdrant_seed --backend api
+    startCommand: >-
+      python scripts/serve.py --docs corpus_full --seed deploy/qdrant_seed
+      --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+
+      # 向量化：硅基流动的 bge-m3（1024 维），OpenAI 兼容端点
+      - key: KB_EMBEDDER
+        value: api
+      - key: KB_EMBED_BASE_URL
+        value: https://api.siliconflow.cn/v1
+      - key: KB_EMBED_MODEL
+        value: BAAI/bge-m3
+      - key: KB_EMBED_API_KEY
+        sync: false
+
+      # 重排与生成
+      - key: KB_RERANKER
+        value: siliconflow
+      - key: KB_LLM
+        value: siliconflow
+      - key: KB_MODEL
+        value: Qwen/Qwen3-8B
+      - key: KB_REWRITER
+        value: llm
+      - key: SILICONFLOW_API_KEY
+        sync: false
+
+      # 拒答阈值：换过 embedding / rerank 之后必须重新标定，留空表示关闭
+      - key: KB_MIN_SCORE
+        sync: false

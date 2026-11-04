@@ -71,6 +71,7 @@ def main() -> None:
     parser.add_argument("--model", default=os.environ.get("KB_MODEL", DEFAULT_MODEL), help="作答模型")
     parser.add_argument("--offline", action="store_true", help="不调 API：hashing + lexical + 替身模型")
     parser.add_argument("--no-examples", action="store_true", help="启动时不探测示例问题（省几次 API 调用）")
+    parser.add_argument("--seed", help="加载预建索引目录，跳过启动时的解析与向量化（部署用）")
     args = parser.parse_args()
 
     docs = pick_docs(args.docs)
@@ -98,6 +99,29 @@ def main() -> None:
         os.environ["KB_MODEL"] = args.model
 
     os.environ["KB_DOCS"] = str(docs)
+    seed_dir: Path | None = None
+    if args.seed:
+        seed_dir = Path(args.seed)
+        if not seed_dir.is_absolute():
+            seed_dir = (ROOT / seed_dir).resolve()
+        if not seed_dir.exists():
+            raise SystemExit(
+                f"预建索引目录不存在：{seed_dir}\n"
+                "先生成：python scripts/build_seed_index.py"
+            )
+        # 维度必须对得上，否则检索会在运行时才炸，报错还很难懂
+        meta_file = seed_dir / "seed_meta.json"
+        if meta_file.exists():
+            meta = json.loads(meta_file.read_text(encoding="utf-8"))
+            want = os.environ.get("KB_EMBEDDER", "auto")
+            if meta.get("backend") and meta["backend"] != want:
+                raise SystemExit(
+                    f"预建索引是用 {meta['backend']}（dim={meta.get('dim')}）建的，"
+                    f"当前 KB_EMBEDDER={want}，维度对不上。\n"
+                    f"要么加 --offline（用自己的 hashing），要么重新建索引："
+                    f"python scripts/build_seed_index.py --backend {want}"
+                )
+        os.environ["KB_QDRANT_PATH"] = str(seed_dir)
     if threshold is None:
         os.environ.pop("KB_MIN_SCORE", None)
     else:
@@ -108,6 +132,12 @@ def main() -> None:
 
     print("rag-kb 知识库问答", flush=True)
     print(f"  语料    {docs.name}（{count_docs(docs)} 篇）", flush=True)
+    if seed_dir:
+        try:
+            shown = seed_dir.relative_to(ROOT)
+        except ValueError:
+            shown = seed_dir
+        print(f"  索引    预建 {shown}（跳过解析与向量化）", flush=True)
     print(
         f"  阈值    {threshold if threshold is not None else '关闭'}"
         + (f"  ← {source}" if source else ""),

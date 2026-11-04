@@ -73,7 +73,14 @@ def _make_client():
     from qdrant_client import QdrantClient
 
     url = os.environ.get("QDRANT_URL")
-    return QdrantClient(url=url) if url else QdrantClient(":memory:")
+    if url:
+        return QdrantClient(url=url)
+    path = os.environ.get("KB_QDRANT_PATH", "").strip()
+    if path:
+        # 本地目录模式：适合部署时加载预建好的索引，省掉启动那段解析与向量化
+        Path(path).mkdir(parents=True, exist_ok=True)
+        return QdrantClient(path=path)
+    return QdrantClient(":memory:")
 
 
 def _min_score() -> float | None:
@@ -168,7 +175,11 @@ def create_app(
         def bootstrap() -> dict[str, Any]:
             embedder = _build_embedder(emb_name)
             store = QdrantStore(_make_client(), collection="kb", dim=embedder.dim)
-            store.ensure(recreate=True)
+            # 只有「预建索引」模式才复用已有集合。远程 Qdrant 仍保持每次重建，
+            # 避免无意中读到上一次遗留的数据。
+            seed_mode = bool(os.environ.get("KB_QDRANT_PATH", "").strip())
+            reused = seed_mode and store.exists()
+            store.ensure(recreate=not reused)
 
             reranker = None
             if rer_name != "none":
@@ -186,7 +197,10 @@ def create_app(
             )
 
             indexed = failed = 0
-            if index_on_start:
+            if reused:
+                # 索引是预建的，跳过解析；文档数从库里数出来
+                indexed = store.count_documents()
+            elif index_on_start:
                 for path in iter_documents(docs):
                     try:
                         doc = parse_document(path)
