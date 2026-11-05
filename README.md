@@ -4,6 +4,8 @@
 
 没有用 LangChain / LlamaIndex，解析、切分、检索、改写、生成、评测都是自己写的。
 
+**在线试一下**：[modelscope.cn/studios/qiaoshiyi/rag-kb](https://www.modelscope.cn/studios/qiaoshiyi/rag-kb) —— 免费实例，15 分钟无访问会休眠，首次打开等 30 秒左右唤醒。
+
 ![控制台](https://cdn.jsdelivr.net/gh/qiaoshiyi/rag-kb@main/assets/screenshot.png)
 
 <sub>两轮追问：第二句「另一个档次呢？」被改写成完整问句后重新检索。截图跑的是早期 16 篇语料，所以顶部显示 110 个切片；换成 `corpus_full` 是 494 块。</sub>
